@@ -1,0 +1,105 @@
+"use client";
+import React, { useState } from "react";
+import { Archive, Flag, Github } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+
+interface SideNavBottomSectionProps {
+  onFileCreate: (fileName: string) => void;
+}
+
+const menuList = [
+  {
+    id: 1,
+    name: "Getting Started",
+    icon: Flag,
+    path: "getting-started",
+  },
+  {
+    id: 2,
+    name: "Github",
+    icon: Github,
+    path: "",
+  },
+  {
+    id: 3,
+    name: "Archive",
+    icon: Archive,
+    path: "",
+  },
+];
+export default function SideNavBottomSection({ onFileCreate }: SideNavBottomSectionProps) {
+  const pathname = usePathname();
+
+  const [fileInput, setFileInput] = useState("");
+  return (
+    <div>
+      {menuList?.map((menu, index) => (
+        <Link key={index} href={menu?.path}>
+          <Button
+            variant={"outline"}
+            className={`flex justify-between items-center gap-0.5 w-full hover:bg-muted mt-1 ${pathname === menu?.path ? "bg-gray-100" : ""}`}
+          >
+            <span className="inline-flex items-center gap-x-2">
+              <menu.icon size={18} />
+              <span className="font-semibold">{menu?.name}</span>
+            </span>
+          </Button>
+        </Link>
+      ))}
+      {/* new file button */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="w-full mt-3 font-semibold bg-blue-600 hover:bg-blue-800 justify-start">
+            New File
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New File</DialogTitle>
+          </DialogHeader>
+          <div className="pt-8">
+            <Label className="text-base font-semibold text-muted-foreground">
+              Team Name
+            </Label>
+            <Input
+              placeholder="Team Name"
+              className="mt-1"
+              onChange={(e) => setFileInput(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                disabled={!(fileInput && fileInput.length > 3)}
+                onClick={() => onFileCreate(fileInput)}
+                type="button"
+                className={`w-full bg-blue-500`}
+              >
+                Create Team
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* progress bar */}
+      <div className="h-4 w-full bg-gray-200 rounded-full mt-5">
+        <div className="h-4 bg-blue-600 rounded-full w-[40%]"></div>
+      </div>
+      {/* progress percentage */}
+      <div className="mt-2">
+        <p className="text-sm">
+          <strong>1</strong> out of <strong>5</strong> files used.
+        </p>
+        <p className="text-nowrap text-sm">
+          <span className="underline">Upgrade</span> your plan for unlimited
+          access.
+        </p>
+      </div>
+    </div>
+  );
+}

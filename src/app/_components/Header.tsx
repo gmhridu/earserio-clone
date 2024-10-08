@@ -1,7 +1,9 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
+import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -41,13 +43,17 @@ export default function Header() {
 
           <div className="flex items-center gap-4">
             <div className="sm:flex sm:gap-4">
-              <Button className="rounded-md bg-teal-600 px-5 py-2.5 text-base font-medium text-white transition hover:bg-teal-700">
-                Login
-              </Button>
+              <LoginLink postLoginRedirectURL="/dashboard">
+                <Button className="rounded-md bg-teal-600 px-5 py-2.5 text-base font-medium text-white transition hover:bg-teal-700">
+                  Login
+                </Button>
+              </LoginLink>
 
-              <Button className="hidden rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600 transition hover:text-teal-600/75 sm:block">
-                Register
-              </Button>
+              <RegisterLink>
+                <Button className="hidden rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600 transition hover:text-teal-600/75 sm:block">
+                  Register
+                </Button>
+              </RegisterLink>
             </div>
 
             <Button className="rounded bg-gray-100 p-2.5 text-gray-600 transition hover:text-muted hover:bg-muted-foreground md:hidden">
