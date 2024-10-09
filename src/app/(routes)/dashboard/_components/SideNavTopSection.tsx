@@ -22,7 +22,7 @@ import React, { useEffect, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 
-interface User {
+export interface User {
   id: string;
   email: string | null;
   given_name: string | null;

@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { Button } from "@/components/ui/button";
 import {
-  LoginLink,
-  LogoutLink,
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
 import { useConvex, useMutation } from "convex/react";
 import { useEffect } from "react";
 import { api } from "../../../../convex/_generated/api";
+import Header from "./_components/Header";
+import FileList from "./_components/FileList";
 
 export default function Dashboard() {
   const { user, isAuthenticated} = useKindeBrowserClient();
@@ -37,16 +36,11 @@ export default function Dashboard() {
     }
   };
 
-  return isAuthenticated ? (
-    <div>
-      Dashboard
-      <Button>
-        <LogoutLink>Logout</LogoutLink>
-      </Button>
+  return isAuthenticated && (
+    <div className="p-7">
+      <Header user={user} />
+      
+      <FileList/>
     </div>
-  ) : (
-    <div>
-      This page is protected, please <LoginLink>Login</LoginLink> to view it
-    </div>
-  );
+  )
 }

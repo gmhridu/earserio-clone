@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 
 interface SideNavBottomSectionProps {
   onFileCreate: (fileName: string) => void;
+  totalFiles?: number;
 }
 
 const menuList = [
@@ -32,8 +33,12 @@ const menuList = [
     path: "",
   },
 ];
-export default function SideNavBottomSection({ onFileCreate }: SideNavBottomSectionProps) {
+export default function SideNavBottomSection({
+  onFileCreate,
+  totalFiles = 0,
+}: SideNavBottomSectionProps) {
   const pathname = usePathname();
+  const progressPercentage = Math.min((totalFiles / 5) * 100, 100); 
 
   const [fileInput, setFileInput] = useState("");
   return (
@@ -88,12 +93,15 @@ export default function SideNavBottomSection({ onFileCreate }: SideNavBottomSect
       </Dialog>
       {/* progress bar */}
       <div className="h-4 w-full bg-gray-200 rounded-full mt-5">
-        <div className="h-4 bg-blue-600 rounded-full w-[40%]"></div>
+        <div
+          className="h-4 bg-blue-600 rounded-full"
+          style={{ width: `${progressPercentage}%` }}
+        ></div>
       </div>
       {/* progress percentage */}
       <div className="mt-2">
         <p className="text-sm">
-          <strong>1</strong> out of <strong>5</strong> files used.
+          <strong>{totalFiles}</strong> out of <strong>5</strong> files used.
         </p>
         <p className="text-nowrap text-sm">
           <span className="underline">Upgrade</span> your plan for unlimited
