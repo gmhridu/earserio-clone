@@ -32,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export interface FILE {
   archive: boolean;
@@ -97,6 +98,7 @@ export default function FileList() {
   const { fileList_ } = useContext(FileListContext);
   const [fileList, setFileList] = useState<any>();
   const { user }: UserProps = useKindeBrowserClient();
+  const router = useRouter();
 
   useEffect(() => {
     if (fileList_) {
@@ -118,7 +120,10 @@ export default function FileList() {
           <TableBody>
             {fileList &&
               fileList?.map((file: FILE, index: number) => (
-                <TableRow key={index}>
+                <TableRow key={index}
+                  onClick={() => router.push(`/workspace/${file?._id}`)}
+                className="cursor-pointer"
+                >
                   <TableCell className="font-medium">
                     {file?.fileName}
                   </TableCell>
