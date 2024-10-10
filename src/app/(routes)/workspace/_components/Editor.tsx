@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef} from "react";
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
@@ -14,7 +14,7 @@ import { api } from "../../../../../convex/_generated/api";
 import { toast } from "sonner";
 import { FILE } from "../../dashboard/_components/FileList";
 
-interface EditorProps {
+export interface EditorProps {
   onSaveTrigger: boolean; 
   fileId: any;
   fileData: FILE | undefined;
@@ -44,7 +44,6 @@ const rawDocument = {
 
 export default function Editor({ onSaveTrigger, fileId, fileData }: EditorProps) {
   const editorRef = useRef<EditorJS | null>(null);
-  const [document, setDocument] = useState<any>(rawDocument);
   const updateDocument = useMutation(api.files.updateDocument);
 
   useEffect(() => {
@@ -82,6 +81,7 @@ export default function Editor({ onSaveTrigger, fileId, fileData }: EditorProps)
             _id: fileId,
             document: JSON.stringify(outputData),
           }).then(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (res) => {
               toast.success("Document Updated", {
                 duration: 3000,

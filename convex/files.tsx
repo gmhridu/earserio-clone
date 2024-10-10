@@ -42,6 +42,17 @@ export const updateDocument = mutation({
   }
 });
 
+export const updateWhiteboard = mutation({
+  args: {
+    _id: v.id('files'),
+    whiteboard: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const res = await ctx.db.patch(args?._id, { whiteboard: args.whiteboard });
+    return res;
+  }
+})
+
 export const getFileById = query({
   args: {
     _id: v.id('files'),
