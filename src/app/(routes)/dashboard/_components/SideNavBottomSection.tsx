@@ -4,9 +4,19 @@ import { Archive, Flag, Github } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import Constant from "@/app/_constant/Constant";
+import PricingDialog from "./PricingDialog";
 
 interface SideNavBottomSectionProps {
   onFileCreate: (fileName: string) => void;
@@ -38,7 +48,7 @@ export default function SideNavBottomSection({
   totalFiles = 0,
 }: SideNavBottomSectionProps) {
   const pathname = usePathname();
-  const progressPercentage = Math.min((totalFiles / 5) * 100, 100); 
+  const progressPercentage = Math.min((totalFiles / 5) * 100, 100);
 
   const [fileInput, setFileInput] = useState("");
   return (
@@ -63,33 +73,35 @@ export default function SideNavBottomSection({
             New File
           </Button>
         </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create New File</DialogTitle>
-          </DialogHeader>
-          <div className="pt-8">
-            <Label className="text-base font-semibold text-muted-foreground">
-              Team Name
-            </Label>
-            <Input
-              placeholder="Team Name"
-              className="mt-1"
-              onChange={(e) => setFileInput(e.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                disabled={!(fileInput && fileInput.length > 3)}
-                onClick={() => onFileCreate(fileInput)}
-                type="button"
-                className={`w-full bg-blue-500`}
-              >
-                Create Team
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
+        {totalFiles < Constant?.MAX_FREE_FILE ? (
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New File</DialogTitle>
+            </DialogHeader>
+            <div className="pt-8">
+              <Label className="text-base font-semibold text-muted-foreground">
+                Team Name
+              </Label>
+              <Input
+                placeholder="Team Name"
+                className="mt-1"
+                onChange={(e) => setFileInput(e.target.value)}
+              />
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  disabled={!(fileInput && fileInput.length > 3)}
+                  onClick={() => onFileCreate(fileInput)}
+                  type="button"
+                  className={`w-full bg-blue-500`}
+                >
+                  Create Team
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        ) : <PricingDialog/>}
       </Dialog>
       {/* progress bar */}
       <div className="h-4 w-full bg-gray-200 rounded-full mt-5">
@@ -101,7 +113,8 @@ export default function SideNavBottomSection({
       {/* progress percentage */}
       <div className="mt-2">
         <p className="text-sm">
-          <strong>{totalFiles}</strong> out of <strong>5</strong> files used.
+          <strong>{totalFiles}</strong> out of{" "}
+          <strong>{Constant.MAX_FREE_FILE}</strong> files used.
         </p>
         <p className="text-nowrap text-sm">
           <span className="underline">Upgrade</span> your plan for unlimited
