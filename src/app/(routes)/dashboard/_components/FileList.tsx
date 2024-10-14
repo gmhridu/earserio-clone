@@ -106,7 +106,7 @@ export default function FileList() {
     }
   }, [fileList_]);
   return (
-    <div className="mt-10">
+    <div className="mt-10 mx-5">
       <Card>
         <Table>
           <TableHeader>

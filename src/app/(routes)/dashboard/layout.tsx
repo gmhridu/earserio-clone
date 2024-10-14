@@ -35,15 +35,18 @@ export default function DashboardLayout({
   if (isLoading) return <Loader/>;
 
   return (
-    <div>
+    <>
       <FileListContext.Provider value={{fileList_, setFileList_}}>
-        <div className="grid grid-cols-4">
+        {/* <div className="grid grid-cols-4">
           <div className="h-screen w-80 fixed">
             <SideNav />
           </div>
           <div className="col-span-4 ml-80">{children}</div>
+        </div> */}
+        <div>
+          {children}
         </div>
       </FileListContext.Provider>
-    </div>
+    </>
   );
 }

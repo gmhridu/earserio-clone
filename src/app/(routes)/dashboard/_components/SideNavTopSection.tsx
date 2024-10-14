@@ -3,16 +3,6 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
 import { useConvex } from "convex/react";
 import { ChevronDown, LayoutGrid, LogOut, Settings, Users } from "lucide-react";
@@ -21,6 +11,11 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import {useLocalStorage} from 'usehooks-ts'
+import { Separator } from "@/components/ui/separator";
+import { useMediaQuery } from "react-responsive";
 
 export interface User {
   id: string;
@@ -33,6 +28,7 @@ export interface User {
 interface SideNavTopSectionProps {
   user: User | null;
   setActiveTeamInfo: (team: TEAM) => void;
+  isCollapsed?: boolean;
 }
 
 export interface TEAM {
@@ -59,116 +55,158 @@ const menu = [
 export default function SideNavTopSection({
   user,
   setActiveTeamInfo,
+  isCollapsed,
 }: SideNavTopSectionProps) {
   const convex = useConvex();
-  const [activeTeam, setActiveTeam] = useState<TEAM>();
+  const [activeTeam, setActiveTeam] = useLocalStorage<TEAM | null>(
+    "activeTeam",
+    null
+  );
   const [teamList, setTeamList] = useState<TEAM[]>([]);
+  const [showAllFiles, setShowAllFiles] = useState<boolean>(false);
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
+
 
   useEffect(() => {
     user && getTeamList();
   }, [user]);
 
   useEffect(() => {
-    activeTeam && setActiveTeamInfo(activeTeam);
-  }, [activeTeam]);
+    if (activeTeam) {
+      setActiveTeamInfo(activeTeam);
+    } else if (teamList.length > 0) {
+      setActiveTeam(teamList[0]);
+      setActiveTeamInfo(teamList[0]);
+    }
+  }, [activeTeam, teamList]);
 
   const getTeamList = async () => {
     const result = await convex.query(api.teams.getTeams, {
       email: user?.email as string,
     });
     setTeamList(result);
-    setActiveTeam(result[0]);
+    if (!activeTeam && result.length > 0) {
+      setActiveTeam(result[0]);
+    }
   };
 
   return (
     <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="flex gap-x-1 items-center justify-center cursor-pointer hover:bg-slate-300 p-2 hover:rounded-md">
-            <Image src={"/logo-1.png"} alt="logo" width={50} height={60} />
-            <h3 className="text-xl font-bold inline-flex items-center">
-              {activeTeam?.teamName}
-              <span className="pl-1">
-                <ChevronDown size={16} />
-              </span>
-            </h3>
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-72 mx-1">
-          <div>
-            {teamList?.map((team) => (
-              <DropdownMenuLabel
-                key={team?._id}
-                className={`font-medium hover:bg-muted  cursor-pointer rounded-md my-2 ${activeTeam?._id === team?._id && "bg-[#2866DF] text-white hover:bg-[#05328d]"}`}
-                onClick={() => setActiveTeam(team)}
-              >
-                {team?.teamName}
-              </DropdownMenuLabel>
-            ))}
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
+      <Select
+        onValueChange={(value) => {
+          const selectedTeam = teamList.find((team) => team._id === value);
+          if (selectedTeam) {
+            setActiveTeam(selectedTeam);
+            setActiveTeamInfo(selectedTeam);
+          }
+        }}
+        value={activeTeam?._id}
+      >
+        <SelectTrigger
+          className={cn(
+            `${isSmallScreen ? "flex-none" : "flex"} items-center gap-2 w-full focus:outline-none focus:ring-white`,
+            isCollapsed && "w-9 h-9 justify-center p-0"
+          )}
+        >
+          <>
+            {isSmallScreen ? (
+              <Button variant={"ghost"} size={"icon"}>
+                <Image
+                  src={"/logo-1.png"}
+                  alt="logo"
+                  width={50}
+                  height={60}
+                  className="size-5 md:size-6"
+                />
+              </Button>
+            ) : (
+              <>
+                <Image
+                  src={"/logo-1.png"}
+                  alt="logo"
+                  width={50}
+                  height={60}
+                  className="size-5 md:size-6"
+                />
+                <span>
+                  <SelectValue placeholder="Select a team">
+                    {activeTeam?.teamName ?? "Select a team"}
+                  </SelectValue>
+                </span>
+              </>
+            )}
+          </>
+        </SelectTrigger>
+        <SelectContent>
+          {teamList?.map((team) => (
+            <SelectItem
+              className="cursor-pointer"
+              key={team?._id}
+              value={team?._id}
+            >
+              {team?.teamName}
+            </SelectItem>
+          ))}
+          <Separator className="mt-2" />
+          <div className="mt-2">
             {menu?.map((item, index) => (
-              <Link key={index} href={item?.path}>
-                <DropdownMenuItem className="cursor-pointer">
-                  <item.icon className="mr-2" size={18} />
-                  <span>{item?.name}</span>
-                  {item?.shortcut && (
-                    <DropdownMenuShortcut>
-                      {item?.shortcut}
-                    </DropdownMenuShortcut>
-                  )}
-                </DropdownMenuItem>
+              <Link
+                key={index}
+                href={item?.path}
+                className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+              >
+                <item.icon className="mr-2" size={18} />
+                <span>{item?.name}</span>
+                {item?.shortcut && (
+                  <span className="ml-auto text-muted-foreground">
+                    {item?.shortcut}
+                  </span>
+                )}
               </Link>
             ))}
+          </div>
+
+          {/* Logout button */}
+          <div>
             <LogoutLink>
-              <DropdownMenuItem className="cursor-pointer">
-                <LogOut className="mr-2" size={18} />
+              <Button
+                variant="ghost"
+                className="flex items-center justify-start gap-2 p-2 w-full"
+              >
+                <LogOut size={18} className="mr-2" />
                 <span>Logout</span>
-              </DropdownMenuItem>
+              </Button>
             </LogoutLink>
-            <DropdownMenuSeparator />
-            {/* User info */}
-            <DropdownMenuItem className="mt-3 mb-2 cursor-pointer">
-              <div className="flex items-center">
-                <Avatar>
-                  <AvatarImage
-                    title={`${user?.given_name ?? ""} ${user?.family_name ?? ""}`}
-                    src={user?.picture || ""}
-                    alt="user AvatarImage"
-                    className="cursor-pointer"
-                  />
-                  <AvatarFallback>
-                    {typeof user?.family_name === "string" && user?.family_name
-                      ? user?.family_name.slice(0, 2).toUpperCase()
-                      : "ER"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col px-2">
-                  <h3 className="text-sm font-semibold">
-                    {user?.given_name ?? ""} {user?.family_name ?? ""}
-                  </h3>
-                  <span className="text-wrap text-muted-foreground">
-                    {user?.email ?? ""}
-                  </span>
-                </div>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </div>
+        </SelectContent>
+      </Select>
 
       {/* All files button */}
-      <Button
-        variant={"outline"}
-        className="flex justify-between items-center gap-2 w-full mt-8 bg-gray-100"
-      >
-        <span className="inline-flex items-center gap-x-2">
+      {isSmallScreen ? (
+        <Button
+          variant={"outline"}
+          size={"icon"}
+          title="All File"
+          className="mt-8 w-full"
+        >
           <LayoutGrid size={18} />
-          <span className="font-semibold">All Files</span>
-        </span>
-        <span className="text-xs">A</span>
-      </Button>
+        </Button>
+      ) : (
+        <Link href={'/dashboard/all-files'}>
+          <Button
+            variant={"outline"}
+            className={`flex justify-between items-center gap-2
+        w-full mt-8 bg-gray-100`}
+              onClick={()=> setShowAllFiles(showAllFiles)}
+          >
+            <span className="inline-flex items-center gap-x-2">
+              <LayoutGrid size={18} />
+              <span className="font-semibold">All Files</span>
+            </span>
+            <span className="text-xs">A</span>
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }

@@ -28,6 +28,7 @@ export default function Workspace({ params }: FileIdProps) {
   const convex = useConvex();
   const [fileData, setFileData] = useState<FILE>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const fileName = fileData?.fileName as string;
 
   useEffect(() => {
     if (params?.fileId) {
@@ -53,10 +54,12 @@ export default function Workspace({ params }: FileIdProps) {
     setTriggerSave((prev) => !prev);
   };
 
+  
+
   if (isLoading) return <Loader />;
   return (
     <div>
-      <WorkspaceHeader onSave={handleSave} />
+      <WorkspaceHeader onSave={handleSave} fileName={fileName} />
 
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="h-screen">

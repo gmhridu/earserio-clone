@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { api } from "../../../../convex/_generated/api";
 import Header from "./_components/Header";
 import FileList from "./_components/FileList";
+import DashboardPage from "./_components/DashboardPage";
+import { User } from "./_components/SideNavTopSection";
 
 export default function Dashboard() {
   const { user, isAuthenticated} = useKindeBrowserClient();
@@ -36,11 +38,16 @@ export default function Dashboard() {
     }
   };
 
-  return isAuthenticated && (
-    <div className="p-7">
-      <Header user={user} />
-      
-      <FileList/>
-    </div>
-  )
+  return (
+    isAuthenticated && (
+      <div className="p-3">
+        <DashboardPage
+          defaultLayout={[20, 80]}
+          defaultCollapsed={false}
+          navCollapsedSize={2}
+          user={user}
+        />
+      </div>
+    )
+  );
 }

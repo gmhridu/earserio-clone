@@ -8,14 +8,22 @@ import { useConvex, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { toast } from "sonner";
 import { FileListContext } from "@/app/_context/FileListContext";
+import { useMediaQuery } from "react-responsive";
 
-export default function SideNav() {
+type Props = {
+  isCollapsed?: boolean;
+}
+
+export default function SideNav({isCollapsed}: Props) {
   const { user } = useKindeBrowserClient();
   const [activeTeam, setActiveTeam] = useState<TEAM>();
   const [totalFiles, setTotalFiles] = useState<number>();
   const createFile = useMutation(api.files.createFile);
   const convex = useConvex();
-  const {setFileList_} = useContext(FileListContext)
+  const { setFileList_ } = useContext(FileListContext);
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
+  
+ 
 
   useEffect(() => {
     if (activeTeam) {
@@ -60,10 +68,13 @@ export default function SideNav() {
   };
 
   return (
-    <div className="h-screen fixed w-[19rem] max-w-96 border-r p-6 flex flex-col">
+    <div
+      className={`h-screen  p-2 flex flex-col ${isSmallScreen && "items-center justify-center"}`}
+    >
       <div className="flex-1">
         <SideNavTopSection
           user={user}
+          isCollapsed={isCollapsed}
           setActiveTeamInfo={(activeTeam) => setActiveTeam(activeTeam)}
         />
       </div>

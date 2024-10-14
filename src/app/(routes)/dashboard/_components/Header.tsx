@@ -12,7 +12,7 @@ export interface UserProps {
 
 export default function Header({ user }: UserProps) {
   return (
-    <div className="flex justify-end gap-2 w-full items-center">
+    <div className="flex justify-end gap-2 w-full items-center mt-5">
       <div className="flex gap-2 items-center relative">
         <Search size={18} className="absolute left-3" />
         <Input type="text" placeholder="Search" className="pl-9" />

@@ -6,17 +6,18 @@ import Link from "next/link";
 import React from "react";
 
 export interface SAVE {
-  onSave: () => void; 
+  onSave: () => void;
+  fileName: string;
 }
 
-export default function WorkspaceHeader({ onSave }: SAVE) {
+export default function WorkspaceHeader({ onSave, fileName }: SAVE) {
   return (
     <div className="p-3 border-b flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Link href={"/dashboard"}>
           <Image src={"/logo-1.png"} alt="logo" width={40} height={40} />
         </Link>
-        <h2>File Name</h2>
+        <h2 className="font-bold">{fileName}</h2>
       </div>
       <div className="flex items-center gap-3">
         <Button
