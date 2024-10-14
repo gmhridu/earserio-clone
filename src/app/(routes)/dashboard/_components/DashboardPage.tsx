@@ -54,7 +54,7 @@ export default function DashboardPage({
           )}
         >
           <div className="flex flex-col">
-            {/* side bar */}
+            {/* side-bar */}
             <SideNav />
           </div>
         </ResizablePanel>
